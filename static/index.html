@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>并行图像实验台</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header><div><span class="mark">OS</span><strong>并行图像实验台</strong></div><div id="identity"></div></header>
+  <main>
+    <section id="login" class="login panel">
+      <h1>打开实验台</h1><p class="muted">提交图片，核对工作进程与图块执行记录。</p>
+      <form id="login-form">
+        <label>演示账号<select name="username"><option>alice</option><option>bob</option><option>admin</option></select></label>
+        <label>密码<input name="password" type="password" value="demo123" autocomplete="current-password" required></label>
+        <button type="submit">登录</button>
+      </form>
+      <p class="muted small">alice 和 bob 查看各自作业，admin 查看全部作业。演示密码为 demo123。</p>
+    </section>
+    <div id="workspace" hidden>
+      <div class="intro"><div><h1>图像处理与执行记录</h1><p class="muted">显示 C++ 服务返回的结果、PID 与每次处理尝试。</p></div><a class="button secondary" href="/api/sample" download>下载示例 PPM</a></div>
+      <div class="layout">
+        <aside>
+          <section class="panel"><h2>提交作业</h2><form id="submit-form">
+            <label>原图<input name="image" type="file" accept=".ppm,image/x-portable-pixmap" required></label>
+            <p class="small muted">P6 PPM，最大 2048 × 2048。</p>
+            <label>处理操作<select name="operation"><option value="grayscale">灰度化</option><option value="invert">反色</option></select></label>
+            <label>优先级<select name="priority"><option value="normal">普通</option><option value="high">高</option></select></label>
+            <label class="checkbox"><input name="fault" type="checkbox">演示一次工作进程退出与重派</label>
+            <button type="submit">开始处理</button>
+          </form></section>
+          <section class="panel"><div class="section-title"><h2>作业</h2><button id="refresh" class="text-button">刷新</button></div><div id="jobs" class="job-list"></div></section>
+        </aside>
+        <div>
+          <section id="server-jobs-panel" class="panel" hidden><div class="section-title"><h2>服务端作业</h2><span class="muted small">管理员视图</span></div><div class="table-scroll"><table><thead><tr><th>作业</th><th>优先级</th><th>状态</th><th>已提交图块</th></tr></thead><tbody id="server-jobs"></tbody></table></div></section>
+          <section id="queues-panel" class="panel" hidden><div class="section-title"><h2>就绪队列与工作进程</h2><span class="muted small">按服务端队列顺序显示</span></div><div class="queues"><div><h3>高优先级 <span id="high-count"></span></h3><ol id="high-queue"></ol></div><div><h3>普通优先级 <span id="normal-count"></span></h3><ol id="normal-queue"></ol></div></div><div id="global-workers"></div></section>
+          <section class="panel result-panel"><div class="section-title"><div><h2 id="result-title">选择一个作业</h2><p id="job-details" class="muted small">完成后可以查看图像与图块记录。</p></div><a id="download" class="button secondary" hidden>下载结果</a></div>
+            <p id="processing" class="notice" hidden>服务端正在处理。TCP 模式会更新图块事件，完成后可查看整图与下载结果。</p>
+            <div id="preview-wrap" hidden><div class="image-stage"><img id="preview" alt="处理后的完整图像" hidden><canvas id="grid" aria-label="点击图块查看执行记录"></canvas></div><p class="small muted">点击图块查看尝试。处理中仅显示已成功提交图块的真实像素。</p></div>
+            <div id="empty" class="empty">上传图片，或从左侧选择已完成的作业。</div>
+          </section>
+          <section class="panel"><div class="section-title"><h2>工作进程时间线</h2><span class="muted small">由派发和提交时间绘制</span></div><div id="worker-controls"></div><div id="timeline" class="timeline"><p class="muted">暂无记录</p></div></section>
+          <section class="panel"><div class="section-title"><h2>图块尝试历史</h2><select id="tile-select" aria-label="选择图块"><option value="">全部图块</option></select></div><div class="table-scroll"><table><thead><tr><th>图块</th><th>尝试</th><th>PID</th><th>事件</th><th>时间</th></tr></thead><tbody id="history"></tbody></table></div></section>
+        </div>
+      </div>
+    </div>
+    <p id="message" role="status" class="message" hidden></p>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>

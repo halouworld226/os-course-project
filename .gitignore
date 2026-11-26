@@ -1,0 +1,13 @@
+build/
+__pycache__/
+*.py[cod]
+*.exe
+*.o
+*.obj
+*.img
+*.img.lock
+demo-data*/
+web-data*/
+web-jobs.json
+.env
+.venv/
